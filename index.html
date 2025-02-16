@@ -20,21 +20,12 @@
                 height: 100dvh;
                 padding: 0;
                 margin: 0;
-            }
-            button {
-                background-color: transparent;
-                border: none;
-            }
-            img {
-                width: 10ch;
+                font-size: 1rem;
             }
         </style>
     </head>
-    <body>
-        <button onclick="locate()">
-            <img src="location-dot.svg" />
-        </button>
-        <div id="result">Geolocation</div>
+    <body onclick="locate()">
+        <div id="result">Tap to locate</div>
         <script>
             function display(message) {
                 document.querySelector("#result").textContent = message;
