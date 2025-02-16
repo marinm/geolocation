@@ -29,10 +29,14 @@
                 padding: 0;
                 margin: 0;
                 border-collapse: collapse;
-                width: 100%;
+                width: fit-content;
+                max-width: 100%;
             }
             td {
                 padding: 0.5ch 0;
+            }
+            td:first-child {
+                max-width: 22ch;
             }
             td:nth-child(2) {
                 width: 22ch;
@@ -72,16 +76,31 @@
             </tbody>
         </table>
         <script>
+            // Sometimes the real delay is slow enough to cause a visible change
+            // but too fast to read, so it looks like a sutter. Force a minimum
+            // delay in rendering to hint that an update actually happened.
+            const MIN_DELAY = 667;
+            let requestedAt = 0;
             let inProgress = false;
 
             function $(selector) {
                 return document.querySelector(selector);
             }
 
-            function onSuccess(position) {
-                inProgress = false;
-                $("#message").textContent = "Results";
+            function setMessage(text) {
+                $("#message").textContent = text;
+            }
 
+            function reset() {
+                $("#latitude").textContent = "-";
+                $("#longitude").textContent = "-";
+                $("#altitude").textContent = "-";
+                $("#heading").textContent = "-";
+                $("#speed").textContent = "-";
+                $("#timestamp").textContent = "-";
+            }
+
+            function displayData(position) {
                 $(
                     "#latitude"
                 ).textContent = `${position.coords.latitude.toFixed(
@@ -116,9 +135,19 @@
                 $("#timestamp").textContent = position.timestamp + " ms";
             }
 
+            function onSuccess(position) {
+                const wait = Math.max(requestedAt + MIN_DELAY - Date.now(), 0);
+                setTimeout(() => {
+                    inProgress = false;
+                    setMessage("Tap to locate");
+                    displayData(position);
+                }, wait);
+            }
+
             function onError(error) {
                 inProgress = false;
-                $("#message").textContent = `Error: ${error.message}`;
+                reset();
+                setMessage(`Error: ${error.message}`);
             }
 
             function locate() {
@@ -127,12 +156,14 @@
                 }
 
                 if (!navigator.geolocation) {
-                    $("#message").textContent = "Not available";
+                    setMessage("Not available");
                     return;
                 }
 
                 inProgress = true;
-                $("#message").textContent = "Locating...";
+                requestedAt = Date.now();
+                reset();
+                setMessage("Locating...");
                 navigator.geolocation.getCurrentPosition(onSuccess, onError);
             }
         </script>
