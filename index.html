@@ -7,10 +7,13 @@
         <title>Geolocation</title>
 
         <style>
+            * {
+                box-sizing: border-box;
+            }
             body {
                 background-color: black;
                 color: white;
-                font-family: sans-serif;
+                font-family: monospace;
                 display: flex;
                 flex-direction: column;
                 gap: 5ch;
@@ -18,12 +21,13 @@
                 align-items: center;
                 width: 100dvw;
                 height: 100dvh;
-                padding: 0;
+                padding: 2ch;
                 margin: 0;
                 font-size: 1rem;
             }
             td {
-                width: 30ch;
+                width: 20ch;
+                padding: 0.5ch 0;
             }
             td:nth-child(2) {
                 text-align: right;
@@ -43,16 +47,8 @@
                     <td id="longitude">-</td>
                 </tr>
                 <tr>
-                    <td>Accuracy (latitude/longitude)</td>
-                    <td id="accuracy-latitude-longitude">-</td>
-                </tr>
-                <tr>
                     <td>Altitude</td>
                     <td id="altitude">-</td>
-                </tr>
-                <tr>
-                    <td>Accuracy (altitude)</td>
-                    <td id="accuracy-altitude">-</td>
                 </tr>
                 <tr>
                     <td>Heading</td>
@@ -75,26 +71,38 @@
 
             function onSuccess(position) {
                 $("#message").textContent = "Results";
-                $("#latitude").textContent = position.coords.latitude + " °N";
-                $("#longitude").textContent = position.coords.longitude + " °E";
-                $("#accuracy-latitude-longitude").textContent =
-                    position.coords.accuracy;
+
+                $(
+                    "#latitude"
+                ).textContent = `${position.coords.latitude.toFixed(
+                    5
+                )} °N ± ${position.coords.accuracy.toFixed(0)} m`;
+
+                $(
+                    "#longitude"
+                ).textContent = `${position.coords.longitude.toFixed(
+                    5
+                )} °E ± ${position.coords.accuracy.toFixed(0)} m`;
+
                 $("#altitude").textContent =
                     position.coords.altitude === null
                         ? "not available"
-                        : position.coords.altitude + " m";
-                $("#accuracy-altitude").textContent =
-                    position.coords.altitudeAccuracy === null
-                        ? "not available"
-                        : position.coords.altitudeAccuracy + " m";
+                        : `${position.coords.altitude.toFixed(
+                              0
+                          )} m ± ${position.coords.altitudeAccuracy.toFixed(
+                              0
+                          )} m`;
+
                 $("#heading").textContent =
                     position.coords.heading === null
                         ? "not available"
-                        : position.coords.heading + " °";
+                        : position.coords.heading.toFixed(0) + " °";
+
                 $("#speed").textContent =
                     position.coords.speed === null
                         ? "not available"
-                        : position.coords.speed + " m/s";
+                        : position.coords.speed.toFixed(1) + " m/s";
+
                 $("#timestamp").textContent = position.timestamp + " ms";
             }
 
