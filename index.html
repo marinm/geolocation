@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link ref="manifest" href="manifest.json" />
+        <title>Geolocation</title>
+
+        <style>
+            body {
+                background-color: black;
+                color: white;
+                font-family: sans-serif;
+                display: flex;
+                flex-direction: column;
+                gap: 5ch;
+                justify-content: center;
+                align-items: center;
+                width: 100dvw;
+                height: 100dvh;
+                padding: 0;
+                margin: 0;
+            }
+            button {
+                background-color: transparent;
+                border: none;
+            }
+            img {
+                width: 10ch;
+            }
+        </style>
+    </head>
+    <body>
+        <button onclick="locate()">
+            <img src="location-dot.svg" />
+        </button>
+        <div id="result">Geolocation</div>
+        <script>
+            function display(message) {
+                document.querySelector("#result").textContent = message;
+            }
+
+            function onSuccess(position) {
+                display(
+                    `${position.coords.latitude} °N, ${position.coords.longitude} °W`
+                );
+            }
+
+            function onError(error) {
+                display(`Error: ${error.message}`);
+            }
+
+            function locate() {
+                if (!navigator.geolocation) {
+                    display("Not available.");
+                    return;
+                }
+
+                display("Locating…");
+                navigator.geolocation.getCurrentPosition(onSuccess, onError);
+            }
+        </script>
+    </body>
+</html>
