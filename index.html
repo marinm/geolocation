@@ -72,11 +72,14 @@
             </tbody>
         </table>
         <script>
+            let inProgress = false;
+
             function $(selector) {
                 return document.querySelector(selector);
             }
 
             function onSuccess(position) {
+                inProgress = false;
                 $("#message").textContent = "Results";
 
                 $(
@@ -114,15 +117,21 @@
             }
 
             function onError(error) {
+                inProgress = false;
                 $("#message").textContent = `Error: ${error.message}`;
             }
 
             function locate() {
+                if (inProgress) {
+                    return;
+                }
+
                 if (!navigator.geolocation) {
                     $("#message").textContent = "Not available";
                     return;
                 }
 
+                inProgress = true;
                 $("#message").textContent = "Locating...";
                 navigator.geolocation.getCurrentPosition(onSuccess, onError);
             }
