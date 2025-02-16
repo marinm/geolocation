@@ -22,32 +22,93 @@
                 margin: 0;
                 font-size: 1rem;
             }
+            td {
+                width: 30ch;
+            }
+            td:nth-child(2) {
+                text-align: right;
+            }
         </style>
     </head>
     <body onclick="locate()">
-        <div id="result">Tap to locate</div>
+        <div id="message">Tap to locate</div>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Latitude</td>
+                    <td id="latitude">-</td>
+                </tr>
+                <tr>
+                    <td>Longitude</td>
+                    <td id="longitude">-</td>
+                </tr>
+                <tr>
+                    <td>Accuracy (latitude/longitude)</td>
+                    <td id="accuracy-latitude-longitude">-</td>
+                </tr>
+                <tr>
+                    <td>Altitude</td>
+                    <td id="altitude">-</td>
+                </tr>
+                <tr>
+                    <td>Accuracy (altitude)</td>
+                    <td id="accuracy-altitude">-</td>
+                </tr>
+                <tr>
+                    <td>Heading</td>
+                    <td id="heading">-</td>
+                </tr>
+                <tr>
+                    <td>Speed</td>
+                    <td id="speed">-</td>
+                </tr>
+                <tr>
+                    <td>Timestamp</td>
+                    <td id="timestamp">-</td>
+                </tr>
+            </tbody>
+        </table>
         <script>
-            function display(message) {
-                document.querySelector("#result").textContent = message;
+            function $(selector) {
+                return document.querySelector(selector);
             }
 
             function onSuccess(position) {
-                display(
-                    `${position.coords.latitude} °N, ${position.coords.longitude} °E`
-                );
+                $("#message").textContent = "Results";
+                $("#latitude").textContent = position.coords.latitude + " °N";
+                $("#longitude").textContent = position.coords.longitude + " °E";
+                $("#accuracy-latitude-longitude").textContent =
+                    position.coords.accuracy;
+                $("#altitude").textContent =
+                    position.coords.altitude === null
+                        ? "not available"
+                        : position.coords.altitude + " m";
+                $("#accuracy-altitude").textContent =
+                    position.coords.altitudeAccuracy === null
+                        ? "not available"
+                        : position.coords.altitudeAccuracy + " m";
+                $("#heading").textContent =
+                    position.coords.heading === null
+                        ? "not available"
+                        : position.coords.heading + " °";
+                $("#speed").textContent =
+                    position.coords.speed === null
+                        ? "not available"
+                        : position.coords.speed + " m/s";
+                $("#timestamp").textContent = position.timestamp + " ms";
             }
 
             function onError(error) {
-                display(`Error: ${error.message}`);
+                $("#message").textContent = `Error: ${error.message}`;
             }
 
             function locate() {
                 if (!navigator.geolocation) {
-                    display("Not available.");
+                    $("#message").textContent = "Not available";
                     return;
                 }
 
-                display("Locating…");
+                $("#message").textContent = "Locating...";
                 navigator.geolocation.getCurrentPosition(onSuccess, onError);
             }
         </script>
